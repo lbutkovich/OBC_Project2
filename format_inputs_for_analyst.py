@@ -4,7 +4,7 @@ Lazarina Butkovich
 created 8/9/25
 
 Takes as input supplementary datasets (.xlsx) from Zhang et al. (2025) for metabolomics and proteomics data.
-Generates .xlsx files for each omics type, formatted for input into the Analyst tools (MetaboAnalyst for metabolomics, ExpressAnalyst for proteomics). The manually curated metadata files are already in proper format for the Analyst tools.
+Generates .xlsx files for each omics type, formatted for input into the Analyst tools for one-factor analysis (MetaboAnalyst for metabolomics, ExpressAnalyst for proteomics).
 
 Zhang et al. (2025): https://doi.org/10.1038/s41467-024-52262-0
 """
@@ -23,6 +23,21 @@ def create_batch_dataframe(metabolites_data_raw, sample_ids):
     batch_data.rename(columns={"ID": "SampleID"}, inplace=True)
     return batch_data
 
+def add_group_labels_row(dataframe, sample_ids, metabolites_metadata):
+    """Add group labels as the first row in the dataframe."""
+    # Create a mapping from SampleID to Group
+    sample_to_group = dict(zip(metabolites_metadata["SampleID"], metabolites_metadata["Group"]))
+    
+    # Create the group labels row
+    group_labels = ["Group"]  # First column label
+    for sample_id in sample_ids:
+        group_labels.append(sample_to_group.get(sample_id, "Unknown"))
+
+    # Insert the group labels row as the first row (index 0)
+    group_row = pd.DataFrame([group_labels], columns=dataframe.columns)
+    dataframe = pd.concat([group_row, dataframe], ignore_index=True)
+
+    return dataframe
 
 """
 Values
@@ -47,10 +62,9 @@ PROTEINS_DATA_RAW_FILENAME = "proteins_raw.xlsx"
 # Metabolites
 METABOLITES_OUTPUT_BATCH_1_FILENAME = "metabolites_input_for_analyst_batch_1.csv"
 METABOLITES_OUTPUT_BATCH_2_FILENAME = "metabolites_input_for_analyst_batch_2.csv"
-METABOLITES_METADATA_OUTPUT_FILENAME = "metabolites_metadata_for_analyst.csv"
 # Proteins
 PROTEINS_OUTPUT_FILENAME = "proteins_input_for_analyst.csv"
-PROTEINS_METADATA_OUTPUT_FILENAME = "proteins_metadata_for_analyst.csv"
+PROTEINS_METADATA_FILENAME = "proteins_metadata.xlsx"
 
 
 """
@@ -67,6 +81,7 @@ metabolites_data_raw = pd.read_excel(pjoin(INPUT_FOLDER, METABOLITES_DATA_RAW_FI
 metabolites_metadata = pd.read_excel(pjoin(INPUT_FOLDER, METABOLITES_METADATA_FILENAME))
 
 proteins_data_raw = pd.read_excel(pjoin(INPUT_FOLDER, PROTEINS_DATA_RAW_FILENAME))
+proteins_metadata = pd.read_excel(pjoin(INPUT_FOLDER, PROTEINS_METADATA_FILENAME))
 
 
 """
@@ -87,6 +102,10 @@ for index, row in metabolites_metadata.iterrows():
 metabolites_output_batch_1 = create_batch_dataframe(metabolites_data_raw, batch_1_sampleIDs)
 metabolites_output_batch_2 = create_batch_dataframe(metabolites_data_raw, batch_2_sampleIDs)
 
+# Add group labels as a second row in the dataframes
+metabolites_output_batch_1 = add_group_labels_row(metabolites_output_batch_1, batch_1_sampleIDs, metabolites_metadata)
+metabolites_output_batch_2 = add_group_labels_row(metabolites_output_batch_2, batch_2_sampleIDs, metabolites_metadata)
+
 # Save to output folder
 metabolites_output_batch_1.to_csv(pjoin(OUTPUT_FOLDER, METABOLITES_OUTPUT_BATCH_1_FILENAME), index=False)
 metabolites_output_batch_2.to_csv(pjoin(OUTPUT_FOLDER, METABOLITES_OUTPUT_BATCH_2_FILENAME), index=False)
@@ -101,6 +120,9 @@ proteins_sample_ids = proteins_data_raw.columns[4:].tolist()
 proteins_output = proteins_data_raw[["Protein Accession"] + proteins_sample_ids].copy()
 # Rename "Protein Accession" to "SampleID" for ExpressAnalyst formatting
 proteins_output.rename(columns={"Protein Accession": "SampleID"}, inplace=True)
+
+# Add group labels as a second row in the dataframe
+proteins_output = add_group_labels_row(proteins_output, proteins_sample_ids, proteins_metadata)
 
 # Save to output folder
 proteins_output.to_csv(pjoin(OUTPUT_FOLDER, PROTEINS_OUTPUT_FILENAME), index=False)
