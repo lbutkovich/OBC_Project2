@@ -1,2 +1,11 @@
-# Analyst_tutorial input folder
-/Analyst_tutorial/input/
+# Older scripts folder
+/older/
+
+# Analyst_tutorial folder
+/Analyst_tutorial/
+
+# Input folder
+/input/
+
+# Output folder
+/output/

@@ -1,0 +1,48 @@
+# Multi-omics Analysis for Diagnosis of Post-trauma Blood Clots
+
+Lazarina Butkovich, Selina Jessica, Vansika K, Nadia Tasevski
+
+Open Bootcamp Collective, Project 2 - 2025
+
+Study: Zhang et al. "Integrated landscape ofplasma metabolism and proteome ofpatients with post-traumatic deep vein thrombosis" Nature Communications (2025). https://doi.org/10.1038/s41467-024-52262-0
+
+## Objectives
+- For this portfolio bioinformatics project, we replicate analyses of Zhang et al.
+- Metabolomics, single-omics
+- Proteomics, single-omics
+- Multi-omics (metabolomics and proteomics)
+
+## Background
+- Study Design
+    - Zhang et al. collected plasma metabolomics and proteomics data for **680 individuals**, with and without **deep vein thrombosis (DVT)** (aka blood clot) after trauma, referred to as **post-trauma deep vein thrombosis (pt-DVT)**.
+    - DVT is a major health problem that can lead to complication, including post-thrombotic syndrome, recurrent DVT, and life-threatening pulmonary embolism. Risk of DVT is elevated post-trauma (aka physical injury).
+    - Failure to diagnose pt-DVT is a leading cause of death post-trauma. Through their multi-omics analysis, Zhang et al. proposed (i) protein and metabolite biomarkers for early diagnosis of pt-DVT and (ii) potential therapeutic strategies for pt-DVT.
+    - In order to develop a predictive model for pt-DVT, Zhang et al. recruited patients for a discovery group (N=580, with n_pt_DVT=252 and n_without_DVT=328 ) and a separate validation group (N=100, with n_pt_DVT=50, n_without_DVT=50).
+- Metabolomics Dataset
+    - After MS/MS identification, 326 metabolites were determined for metabolomic analysis in all 580 samples of the discovery cohort.
+    - To process the data:
+        - Process analytical batches separately (batch 1 and batch 2). By scaling by batch, the sensitivity differences between batches is corrected, and the relative abundances matrix of all peaks becomes comparable.
+        - Filter to remove noise
+            - Remove peaks whose RSD (relative standard deviation) is 40%< in QC samples
+            - Remove peaks with more than 50% null values in a single group or all groups
+        - Impute data:
+            - For remaining features with missing intensity values, replace with half the minimum value for that metabolite across all samples.
+        - Normalize by dividing intensities by the intensity of the internal standard (IS) (see data column "ID", value "IS" in Supplementary Data 2; there is a positive and negative ionization mode reading for "IS")
+        - Log-transform
+        - Scale by median centered
+    - Use Supplementary Data 3 to directly compare metabolomics data processing of Zhang et al. to the results in this portfolio project.
+- Proteomics Dataset
+    - After protein identification, 524 proteins were determined for proteomic analysis in 183 of the 580 samples of the discovery cohort.
+    - To process data:
+        - Filter and impute data comparable to metabolomics data processing:
+            - Remove proteins with more than 50% null values in a single group or all groups.
+            - For remaining proteins, replace any missing values with half of the minimum value for that protein across all samples.
+        - Log-transform
+        - Scale by median centered
+- Multi-omics analysis
+    - MetaboAnalyst joint pathway enrichment
+
+## Scripts Overview
+1. format_inputs_for_analyst.py
+2. expressanalystR_data_processing.r
+3. metaboanalystR_data_processing.r
