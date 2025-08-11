@@ -112,6 +112,10 @@ metabolites_output_batch_2 = create_batch_dataframe(metabolites_data_raw, batch_
 metabolites_output_batch_1.replace(0, pd.NA, inplace=True)
 metabolites_output_batch_2.replace(0, pd.NA, inplace=True)
 
+# Rename IS (internal standard) feature for negative ionization mode, (row 2 feature) as ISneg. MetaboAnalystR cannot take in data for features with an identical name.
+metabolites_output_batch_1.loc[1, "SampleID"] = "ISneg"
+metabolites_output_batch_2.loc[1, "SampleID"] = "ISneg"
+
 # Add group labels as a second row in the dataframes
 metabolites_output_batch_1 = add_group_labels_row(metabolites_output_batch_1, batch_1_sampleIDs, metabolites_metadata)
 metabolites_output_batch_2 = add_group_labels_row(metabolites_output_batch_2, batch_2_sampleIDs, metabolites_metadata)
