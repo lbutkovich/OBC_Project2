@@ -108,6 +108,10 @@ for index, row in metabolites_metadata.iterrows():
 metabolites_output_batch_1 = create_batch_dataframe(metabolites_data_raw, batch_1_sampleIDs)
 metabolites_output_batch_2 = create_batch_dataframe(metabolites_data_raw, batch_2_sampleIDs)
 
+# For data values, replace "0" with NaN. This helps MetaboAnalystR to perform missing value exclusion (remove features above a group-wise threshold for missing values).
+metabolites_output_batch_1.replace(0, pd.NA, inplace=True)
+metabolites_output_batch_2.replace(0, pd.NA, inplace=True)
+
 # Add group labels as a second row in the dataframes
 metabolites_output_batch_1 = add_group_labels_row(metabolites_output_batch_1, batch_1_sampleIDs, metabolites_metadata)
 metabolites_output_batch_2 = add_group_labels_row(metabolites_output_batch_2, batch_2_sampleIDs, metabolites_metadata)
