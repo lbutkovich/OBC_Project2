@@ -83,6 +83,12 @@ metabolites_metadata = pd.read_excel(pjoin(INPUT_FOLDER, METABOLITES_METADATA_FI
 proteins_data_raw = pd.read_excel(pjoin(INPUT_FOLDER, PROTEINS_DATA_RAW_FILENAME))
 proteins_metadata = pd.read_excel(pjoin(INPUT_FOLDER, PROTEINS_METADATA_FILENAME))
 
+"""
+Specify QC Groups in Metadata
+"""
+# For values of "-" in column "Group", replace with "QC"
+metabolites_metadata = metabolites_metadata.replace({"Group": {"-": "QC"}})
+proteins_metadata = proteins_metadata.replace({"Group": {"-": "QC"}})
 
 """
 Create Output DataFrames for Metabolite Batches
