@@ -18,9 +18,9 @@ Functions
 """
 def create_batch_dataframe(metabolites_data_raw, sample_ids):
     """Create a batch dataframe with SampleID column and specified sample columns."""
-    columns = ["ID"] + sample_ids
+    columns = ["Metabolite"] + sample_ids
     batch_data = metabolites_data_raw[columns].copy()
-    batch_data.rename(columns={"ID": "SampleID"}, inplace=True)
+    batch_data.rename(columns={"Metabolite": "SampleID"}, inplace=True)
     return batch_data
 
 def add_group_labels_row(dataframe, sample_ids, metabolites_metadata):
@@ -112,9 +112,9 @@ metabolites_output_batch_2 = create_batch_dataframe(metabolites_data_raw, batch_
 metabolites_output_batch_1.replace(0, pd.NA, inplace=True)
 metabolites_output_batch_2.replace(0, pd.NA, inplace=True)
 
-# Rename IS (internal standard) feature for negative ionization mode, (row 2 feature) as ISneg. MetaboAnalystR cannot take in data for features with an identical name.
-metabolites_output_batch_1.loc[1, "SampleID"] = "ISneg"
-metabolites_output_batch_2.loc[1, "SampleID"] = "ISneg"
+# Rename IS (internal standard) feature for negative ionization mode, (row 2 feature) as IS (neg). MetaboAnalystR cannot take in data for features with an identical name.
+metabolites_output_batch_1.loc[1, "SampleID"] = "L-Leucine-d3 (methyl-d3) (neg)"
+metabolites_output_batch_2.loc[1, "SampleID"] = "L-Leucine-d3 (methyl-d3) (neg)"
 
 # Add group labels as a second row in the dataframes
 metabolites_output_batch_1 = add_group_labels_row(metabolites_output_batch_1, batch_1_sampleIDs, metabolites_metadata)
@@ -130,10 +130,10 @@ Create Output Dataframe for Proteins
 """
 # Starting from the 5th column, fetch the SampleIDs in the proteins_data_raw
 proteins_sample_ids = proteins_data_raw.columns[4:].tolist()
-# For proteins_output df, include "Protein Accession" and all the columns for SampleIDs
-proteins_output = proteins_data_raw[["Protein Accession"] + proteins_sample_ids].copy()
-# Rename "Protein Accession" to "SampleID" for ExpressAnalyst formatting
-proteins_output.rename(columns={"Protein Accession": "SampleID"}, inplace=True)
+# For proteins_output df, include "Gene Name" and all the columns for SampleIDs
+proteins_output = proteins_data_raw[["Gene Name"] + proteins_sample_ids].copy()
+# Rename "Gene Name" to "SampleID" for ExpressAnalyst formatting
+proteins_output.rename(columns={"Gene Name": "SampleID"}, inplace=True)
 
 # Add group labels as a second row in the dataframe
 proteins_output = add_group_labels_row(proteins_output, proteins_sample_ids, proteins_metadata)
