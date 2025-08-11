@@ -8,9 +8,9 @@
 # Clean global environment
 rm(list = ls())
 
-#############################################
+############################################
 # Install and Load Required Packages
-#############################################
+############################################
 # # Function to install (if needed) and load packages
 # install_and_load <- function(pkg, bioc = FALSE, github = NULL, quiet = TRUE) {
 #   if (!requireNamespace(pkg, quietly = TRUE)) {
@@ -58,9 +58,9 @@ rm(list = ls())
 # message("Installing and loading CRAN packages...")
 # invisible(lapply(cran_packages, function(pkg) install_and_load(pkg)))
 
-# # Install and load MetaboAnalystR from GitHub
+# # Install and load MetaboAnalystR from GitHub. Specified a working version of MetaboAnalystR (can update as needed)
 # message("Installing and loading MetaboAnalystR...")
-# install_and_load("MetaboAnalystR", github = "xia-lab/MetaboAnalystR")
+# devtools::install_github("xia-lab/MetaboAnalystR", build = TRUE, ref = "5aee8b4f0d27c27864198a6fd99414575d693836", build_vignettes = FALSE, build_manual =F)
 
 # # Load required libraries explicitly for this script
 # library(ggplot2)  # For violin plots
@@ -106,10 +106,11 @@ library(MetaboAnalystR)
 
 # Initialize data object mSet for MetaboAnalystR
 # data.type: pktable = peak intensity table
-mSet <- InitDataObjects("pktable", "stat", FALSE)
+mSet <- InitDataObjects("pktable", "stat", FALSE);
 
 # Read metabolite data for batch
-mSet <- Read.TextData(mSet, paste(main_dir, output_folder, metabolites_data_batch_1_filename, sep = "\\"), "colu", "disc");
+# "colu" = sampleIDs in columns, unpaired
+mSet <- Read.TextData(mSet, paste(main_dir, output_folder, metabolites_data_batch_2_filename, sep = "\\"), "colu", "disc");
 
 # Sanity check data
 mSet <- SanityCheckData(mSet)
@@ -127,3 +128,13 @@ mSet <- ReplaceMin(mSet)
 ##############
 # Filter features based on QC samples (remove samples with RSD >40% in QC samples). No low-variance filter or low-abundance filter applied
 mSet <- FilterVariable(mSet, "T", 40, "iqr", 0, "mean", 0)
+
+
+##############
+# Normalize Data
+##############
+mSet<-PreparePrenormData(mSet)
+
+mSet<-Normalization(mSet, "CompNorm", "LogNorm", "AutoNorm", "IS", ratio=FALSE, ratioNum=20)
+mSet<-PlotNormSummary(mSet, "norm_0_", "png", 150, width=NA)
+mSet<-PlotSampleNormSummary(mSet, "snorm_0_", "png", 150, width=NA)
