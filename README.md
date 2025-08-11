@@ -27,9 +27,9 @@ Study: Zhang et al. "Integrated landscape ofplasma metabolism and proteome ofpat
             - Remove peaks with more than 50% null values in a single group or all groups
         - Impute data:
             - For remaining features with missing intensity values, replace with half the minimum value for that metabolite across all samples.
-        - Normalize by dividing intensities by the intensity of the internal standard (IS) (see data column "ID", value "IS" in Supplementary Data 2; there is a positive and negative ionization mode reading for "IS")
+        - Normalize by dividing intensities by the intensity of the internal standard (IS) (see data column "ID", value "IS" in Supplementary Data 2; we normalized by the positive ionization "IS")
         - Log-transform
-        - Scale by median centered
+        - Scale by median centered (we scaled via auto scaling - mean-center then divide by the standard deviation of each variable)
     - Use Supplementary Data 3 to directly compare metabolomics data processing of Zhang et al. to the results in this portfolio project.
 - Proteomics Dataset
     - After protein identification, 524 proteins were determined for proteomic analysis in 183 of the 580 samples of the discovery cohort.
