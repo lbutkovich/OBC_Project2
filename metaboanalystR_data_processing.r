@@ -2,7 +2,7 @@
 # Lazarina Butkovich, created 8/10/25
 # This workflow performs data processing in MetaboAnalystR, in order to run the processed data through additional tools in the MetaboAnalyst web platform.
 # 2 Sample Types: 
-# MetaboAnalyst: use the Statistical Analysis [one factor] (https://www.metaboanalyst.ca/MetaboAnalyst/ModuleView.xhtml)
+# MetaboAnalyst: use the Statistical Analysis [metadata table] (https://www.metaboanalyst.ca/MetaboAnalyst/ModuleView.xhtml)
 
 
 # Clean global environment
@@ -11,59 +11,59 @@ rm(list = ls())
 #############################################
 # Install and Load Required Packages
 #############################################
-# Function to install (if needed) and load packages
-install_and_load <- function(pkg, bioc = FALSE, github = NULL, quiet = TRUE) {
-  if (!requireNamespace(pkg, quietly = TRUE)) {
-    message(paste("Installing package:", pkg))
-    if (!is.null(github)) {
-      if (!requireNamespace("devtools", quietly = TRUE))
-        install.packages("devtools")
-      devtools::install_github(github, build = TRUE,
-                              build_vignettes = FALSE,
-                              build_manual = FALSE)
-    } else if (bioc) {
-      if (!requireNamespace("BiocManager", quietly = TRUE))
-        install.packages("BiocManager")
-      BiocManager::install(pkg)
-    } else {
-      install.packages(pkg)
-    }
-  }
-  suppressPackageStartupMessages(
-    library(pkg, character.only = TRUE)
-  )
-}
+# # Function to install (if needed) and load packages
+# install_and_load <- function(pkg, bioc = FALSE, github = NULL, quiet = TRUE) {
+#   if (!requireNamespace(pkg, quietly = TRUE)) {
+#     message(paste("Installing package:", pkg))
+#     if (!is.null(github)) {
+#       if (!requireNamespace("devtools", quietly = TRUE))
+#         install.packages("devtools")
+#       devtools::install_github(github, build = TRUE,
+#                               build_vignettes = FALSE,
+#                               build_manual = FALSE)
+#     } else if (bioc) {
+#       if (!requireNamespace("BiocManager", quietly = TRUE))
+#         install.packages("BiocManager")
+#       BiocManager::install(pkg)
+#     } else {
+#       install.packages(pkg)
+#     }
+#   }
+#   suppressPackageStartupMessages(
+#     library(pkg, character.only = TRUE)
+#   )
+# }
 
-# Set options for package installation
-options(install.packages.compile.from.source = "always")
+# # Set options for package installation
+# options(install.packages.compile.from.source = "always")
 
-# List of required packages
-# MetaboAnalystR dependencies (Bioconductor)
-bioc_packages <- c(
-  "impute", "pcaMethods", "globaltest", "GlobalAncova", "Rgraphviz", 
-  "preprocessCore", "genefilter", "sva", "limma", "KEGGgraph", 
-  "siggenes", "BiocParallel", "MSnbase", "multtest", "RBGL", "edgeR", "fgsea"
-)
+# # List of required packages
+# # MetaboAnalystR dependencies (Bioconductor)
+# bioc_packages <- c(
+#   "impute", "pcaMethods", "globaltest", "GlobalAncova", "Rgraphviz", 
+#   "preprocessCore", "genefilter", "sva", "limma", "KEGGgraph", 
+#   "siggenes", "BiocParallel", "MSnbase", "multtest", "RBGL", "edgeR", "fgsea"
+# )
 
-# CRAN packages
-cran_packages <- c(
-  "devtools", "crmn", "httr", "qs", "readxl", "ggrepel", "ellipse", 
-  "vegan", "pls", "rjson", "pheatmap", "ggplot2", "iheatmapr"
-)
+# # CRAN packages
+# cran_packages <- c(
+#   "devtools", "crmn", "httr", "qs", "readxl", "ggrepel", "ellipse", 
+#   "vegan", "pls", "rjson", "pheatmap", "ggplot2", "iheatmapr"
+# )
 
-# Install and load all required packages
-message("Installing and loading Bioconductor packages...")
-invisible(lapply(bioc_packages, function(pkg) install_and_load(pkg, bioc = TRUE)))
+# # Install and load all required packages
+# message("Installing and loading Bioconductor packages...")
+# invisible(lapply(bioc_packages, function(pkg) install_and_load(pkg, bioc = TRUE)))
 
-message("Installing and loading CRAN packages...")
-invisible(lapply(cran_packages, function(pkg) install_and_load(pkg)))
+# message("Installing and loading CRAN packages...")
+# invisible(lapply(cran_packages, function(pkg) install_and_load(pkg)))
 
-# Install and load MetaboAnalystR from GitHub
-message("Installing and loading MetaboAnalystR...")
-install_and_load("MetaboAnalystR", github = "xia-lab/MetaboAnalystR")
+# # Install and load MetaboAnalystR from GitHub
+# message("Installing and loading MetaboAnalystR...")
+# install_and_load("MetaboAnalystR", github = "xia-lab/MetaboAnalystR")
 
-# Load required libraries explicitly for this script
-library(ggplot2)  # For violin plots
+# # Load required libraries explicitly for this script
+# library(ggplot2)  # For violin plots
 
 
 ##############
@@ -71,7 +71,6 @@ library(ggplot2)  # For violin plots
 ##############
 # Folders:
 main_dir <- "C:\\Users\\lazab\\Documents\\github\\Open_Bootcamp_Collective_Bioinformatics\\OBC_Project2"
-input_folder <- "input"
 output_folder <- "output"
 metaboanalystR_output_folder <- "MetaboAnalystR_output"
 
@@ -88,3 +87,43 @@ metabolites_data_batch_2_filename <- "metabolites_input_for_analyst_batch_2.csv"
 # metadata with sample type information per SampleID, in input folder
 metabolites_metadata_filename <- "metabolites_metadata.xlsx" 
 
+
+##############
+# Organize Output Directory
+##############
+# Empty the MetaboAnalystR_output folder 
+file.remove(list.files(metaboanalystR_output_folder_dir, full.names = TRUE))
+
+# Set directory to MetaboAnalystR output folder so that created files get placed there
+setwd(metaboanalystR_output_folder_dir)
+
+
+##############
+# Load MetaboAnalystR and Data Table
+##############
+# Load MetaboAnalystR
+library(MetaboAnalystR)
+
+# Initialize data object mSet for MetaboAnalystR
+# data.type: pktable = peak intensity table
+mSet <- InitDataObjects("pktable", "stat", FALSE)
+
+# Read metabolite data for batch
+mSet <- Read.TextData(mSet, paste(main_dir, output_folder, metabolites_data_batch_1_filename, sep = "\\"), "colu", "disc");
+
+# Sanity check data
+mSet <- SanityCheckData(mSet)
+
+
+##############
+# Replace Missing Values
+##############
+# Replace missing values with 1/2 of the value of the smallest non-zero value for each feature across samples
+mSet <- ReplaceMin(mSet)
+
+
+##############
+# Perform Data Filtering
+##############
+# Filter features based on QC samples (remove samples with RSD >40% in QC samples). No low-variance filter or low-abundance filter applied
+mSet <- FilterVariable(mSet, "T", 40, "iqr", 0, "mean", 0)
