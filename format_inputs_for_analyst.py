@@ -29,7 +29,7 @@ def add_group_labels_row(dataframe, sample_ids, metabolites_metadata):
     sample_to_group = dict(zip(metabolites_metadata["SampleID"], metabolites_metadata["Group"]))
     
     # Create the group labels row
-    group_labels = ["Group"]  # First column label
+    group_labels = ["#CLASS"]  # First column label
     for sample_id in sample_ids:
         group_labels.append(sample_to_group.get(sample_id, "Unknown"))
 
@@ -63,7 +63,7 @@ PROTEINS_DATA_RAW_FILENAME = "proteins_raw.xlsx"
 METABOLITES_OUTPUT_BATCH_1_FILENAME = "metabolites_input_for_analyst_batch_1.csv"
 METABOLITES_OUTPUT_BATCH_2_FILENAME = "metabolites_input_for_analyst_batch_2.csv"
 # Proteins
-PROTEINS_OUTPUT_FILENAME = "proteins_input_for_analyst.csv"
+PROTEINS_OUTPUT_FILENAME = "proteins_input_for_analyst.txt"
 PROTEINS_METADATA_FILENAME = "proteins_metadata.xlsx"
 
 
@@ -135,8 +135,9 @@ proteins_output = proteins_data_raw[["Gene Name"] + proteins_sample_ids].copy()
 # Rename "Gene Name" to "SampleID" for ExpressAnalyst formatting
 proteins_output.rename(columns={"Gene Name": "SampleID"}, inplace=True)
 
+
 # Add group labels as a second row in the dataframe
 proteins_output = add_group_labels_row(proteins_output, proteins_sample_ids, proteins_metadata)
 
-# Save to output folder
-proteins_output.to_csv(pjoin(OUTPUT_FOLDER, PROTEINS_OUTPUT_FILENAME), index=False)
+# Save to output folder as .txt with tab-delimited
+proteins_output.to_csv(pjoin(OUTPUT_FOLDER, PROTEINS_OUTPUT_FILENAME), index=False, sep="\t")
