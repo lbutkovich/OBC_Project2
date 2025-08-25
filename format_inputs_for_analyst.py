@@ -3,7 +3,7 @@ format_inputs_for_analyst.py
 Lazarina Butkovich
 created 8/9/25
 
-Takes as input supplementary datasets (.xlsx) from Zhang et al. (2025) for metabolomics and proteomics data.
+Takes as input supplementary datasets (.xlsx) modified from Zhang et al. (2025) for metabolomics and proteomics data.
 Generates .xlsx files for each omics type, formatted for input into the Analyst tools for one-factor analysis (MetaboAnalyst for metabolomics, ExpressAnalyst for proteomics).
 
 Zhang et al. (2025): https://doi.org/10.1038/s41467-024-52262-0
@@ -38,6 +38,7 @@ def add_group_labels_row(dataframe, sample_ids, metabolites_metadata):
     dataframe = pd.concat([group_row, dataframe], ignore_index=True)
 
     return dataframe
+
 
 """
 Values

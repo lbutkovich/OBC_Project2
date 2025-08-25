@@ -1,7 +1,6 @@
 # metaboAnalystR_data_processing
 # Lazarina Butkovich, created 8/10/25
 # This workflow performs data processing in MetaboAnalystR, in order to run the processed data through additional tools in the MetaboAnalyst web platform.
-# 2 Sample Types: 
 # MetaboAnalyst: use the Statistical Analysis [metadata table] (https://www.metaboanalyst.ca/MetaboAnalyst/ModuleView.xhtml)
 
 

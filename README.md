@@ -9,8 +9,10 @@ Study: Zhang et al. "Integrated landscape ofplasma metabolism and proteome ofpat
 ## Objectives
 - For this portfolio bioinformatics project, we replicate analyses of Zhang et al.
 - Metabolomics, single-omics
-- Proteomics, single-omics
-- Multi-omics (metabolomics and proteomics)
+- Proteomics, single-omics (in progress)
+- Clinical Parameters (in progress)
+- Multi-omics (in progress)
+- Predictive Model for pt-DVT (in progress)
 
 ## Background
 - Study Design
@@ -31,18 +33,12 @@ Study: Zhang et al. "Integrated landscape ofplasma metabolism and proteome ofpat
         - Log-transform
         - Scale by median centered (we scaled via auto scaling - mean-center then divide by the standard deviation of each variable)
     - Use Supplementary Data 3 to directly compare metabolomics data processing of Zhang et al. to the results in this portfolio project.
-- Proteomics Dataset
-    - After protein identification, 524 proteins were determined for proteomic analysis in 183 of the 580 samples of the discovery cohort.
-    - To process data:
-        - Filter and impute data comparable to metabolomics data processing:
-            - Remove proteins with more than 50% null values in a single group or all groups.
-            - For remaining proteins, replace any missing values with half of the minimum value for that protein across all samples.
-        - Log-transform
-        - Scale by median centered
-- Multi-omics analysis
-    - MetaboAnalyst joint pathway enrichment
 
-## Scripts Overview
+## Scripts Overview for Metabolomics Analysis - Lazarina Butkovich
 1. format_inputs_for_analyst.py
-2. expressanalystR_data_processing.r
-3. metaboanalystR_data_processing.r
+    - formats both metabolomic and proteomic data from edited version of Zhang et al Supplementary Datasets (Supplementary Datasets 2 and 13, respectively)
+    - [Input files made available](https://drive.google.com/drive/folders/16BtKjSYnBhux7OyCesLEZcAfHZCnFDlo?usp=drive_link)
+2. metaboanalystR_data_processing.r
+    - Performs single-omic metabolomic analysis
+    - Run batches separately then combine post-normalization
+    - Run the combined, normalized data through [MetaboAnalyst](https://www.metaboanalyst.ca/MetaboAnalyst/ModuleView.xhtml) web platform, ["Statistical Analysis [one factor]"](https://www.metaboanalyst.ca/MetaboAnalyst/upload/StatUploadView.xhtml) (skip normalization steps)
