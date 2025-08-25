@@ -6,6 +6,8 @@ Open Bootcamp Collective, Project 2 - 2025
 
 Study: Zhang et al. "Integrated landscape ofplasma metabolism and proteome ofpatients with post-traumatic deep vein thrombosis" Nature Communications (2025). https://doi.org/10.1038/s41467-024-52262-0
 
+Open Bootcamp Collective Presentation: [Google Slides](https://docs.google.com/presentation/d/18uQecJWnLZTf-ahNiDXNVvwuzzKkZgoMef-O1dg1Qpo/edit?usp=sharing)
+
 ## Objectives
 - For this portfolio bioinformatics project, we replicate analyses of Zhang et al.
 - Metabolomics, single-omics
@@ -37,8 +39,18 @@ Study: Zhang et al. "Integrated landscape ofplasma metabolism and proteome ofpat
 ## Scripts Overview for Metabolomics Analysis - Lazarina Butkovich
 1. format_inputs_for_analyst.py
     - formats both metabolomic and proteomic data from edited version of Zhang et al Supplementary Datasets (Supplementary Datasets 2 and 13, respectively)
-    - [Input files made available](https://drive.google.com/drive/folders/16BtKjSYnBhux7OyCesLEZcAfHZCnFDlo?usp=drive_link) with Google Drive
-2. metaboanalystR_data_processing.r
-    - Performs single-omic metabolomic analysis
-    - Run batches separately then combine post-normalization
-    - Run the combined, normalized data through [MetaboAnalyst](https://www.metaboanalyst.ca/MetaboAnalyst/ModuleView.xhtml) web platform, ["Statistical Analysis [one factor]"](https://www.metaboanalyst.ca/MetaboAnalyst/upload/StatUploadView.xhtml) (skip normalization steps)
+    - [Input files made available](https://drive.google.com/drive/folders/16BtKjSYnBhux7OyCesLEZcAfHZCnFDlo?usp=drive_link) with Google Drive:
+        - metabolites_raw.xlsx
+        - proteins_raw.xlsx
+        - metabolites_metadata.xlsx
+2. MetaboAnalyst
+    - Option 1: manually run MetaboAnalyst web platform
+        - Use [MetaboAnalyst](https://www.metaboanalyst.ca/MetaboAnalyst/ModuleView.xhtml) web platform to normalize data per batch from script "format_inputs_for_analyst.py"    
+        - The outputs of these steps are supplied for the script "combine_normalized_batches.py"
+    - Option 2: run MetaboAnalystR
+        - metaboAnalystR_data_processing.r (in progress)
+3. combine_normalized_batches.py
+    - [Input files made available](https://drive.google.com/drive/folders/16BtKjSYnBhux7OyCesLEZcAfHZCnFDlo?usp=drive_link) with Google Drive:
+        - data_normalized_batch_1.csv
+        - data_normalized_batch_2.csv
+    - Run the combined, normalized data again through the [MetaboAnalyst](https://www.metaboanalyst.ca/MetaboAnalyst/ModuleView.xhtml) web platform, ["Statistical Analysis [one factor]"](https://www.metaboanalyst.ca/MetaboAnalyst/upload/StatUploadView.xhtml) (skip normalization steps)
