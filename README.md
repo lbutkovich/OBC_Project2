@@ -37,7 +37,7 @@ Study: Zhang et al. "Integrated landscape ofplasma metabolism and proteome ofpat
 ## Scripts Overview for Metabolomics Analysis - Lazarina Butkovich
 1. format_inputs_for_analyst.py
     - formats both metabolomic and proteomic data from edited version of Zhang et al Supplementary Datasets (Supplementary Datasets 2 and 13, respectively)
-    - [Input files made available](https://drive.google.com/drive/folders/16BtKjSYnBhux7OyCesLEZcAfHZCnFDlo?usp=drive_link)
+    - [Input files made available](https://drive.google.com/drive/folders/16BtKjSYnBhux7OyCesLEZcAfHZCnFDlo?usp=drive_link) with Google Drive
 2. metaboanalystR_data_processing.r
     - Performs single-omic metabolomic analysis
     - Run batches separately then combine post-normalization
