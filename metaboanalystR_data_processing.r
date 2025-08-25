@@ -57,9 +57,9 @@ rm(list = ls())
 # message("Installing and loading CRAN packages...")
 # invisible(lapply(cran_packages, function(pkg) install_and_load(pkg)))
 
-# # Install and load MetaboAnalystR from GitHub. Specified a working version of MetaboAnalystR (can update as needed)
-# message("Installing and loading MetaboAnalystR...")
-# devtools::install_github("xia-lab/MetaboAnalystR", build = TRUE, ref = "5aee8b4f0d27c27864198a6fd99414575d693836", build_vignettes = FALSE, build_manual =F)
+# Install and load MetaboAnalystR from GitHub. Specified a working version of MetaboAnalystR (can update as needed)
+message("Installing and loading MetaboAnalystR...")
+devtools::install_github("xia-lab/MetaboAnalystR", build = TRUE, ref = "5aee8b4f0d27c27864198a6fd99414575d693836", build_vignettes = FALSE, build_manual =F)
 
 # # Load required libraries explicitly for this script
 # library(ggplot2)  # For violin plots
@@ -90,50 +90,89 @@ metabolites_metadata_filename <- "metabolites_metadata.xlsx"
 ##############
 # Organize Output Directory
 ##############
+files_to_run <- c(metabolites_data_batch_1_filename, metabolites_data_batch_2_filename)
+
 # Empty the MetaboAnalystR_output folder 
 file.remove(list.files(metaboanalystR_output_folder_dir, full.names = TRUE))
 
-# Set directory to MetaboAnalystR output folder so that created files get placed there
-setwd(metaboanalystR_output_folder_dir)
-
-
 ##############
-# Load MetaboAnalystR and Data Table
+# Iterate over batches to separately run MetaboAnalystR
 ##############
-# Load MetaboAnalystR
-library(MetaboAnalystR)
 
-# Initialize data object mSet for MetaboAnalystR
-# data.type: pktable = peak intensity table
-mSet <- InitDataObjects("pktable", "stat", FALSE);
+for (filename in files_to_run) {
+  
+  # Determine batch name from filename
+  if (filename == metabolites_data_batch_1_filename) {
+    batch_name <- "batch_1"
+  } else if (filename == metabolites_data_batch_2_filename) {
+    batch_name <- "batch_2"
+  }
+  
+  # Create batch-specific subdirectory
+  batch_dir <- file.path(metaboanalystR_output_folder_dir, batch_name)
+  if (!dir.exists(batch_dir)) {
+    dir.create(batch_dir)
+  }
+  
+  # Set directory to batch-specific output folder
+  setwd(batch_dir)
 
-# Read metabolite data for batch
-# "colu" = sampleIDs in columns, unpaired
-mSet <- Read.TextData(mSet, paste(main_dir, output_folder, metabolites_data_batch_2_filename, sep = "\\"), "colu", "disc");
+  ##############
+  # Load MetaboAnalystR and Data Table
+  ##############
+  # Load MetaboAnalystR
+  library(MetaboAnalystR)
 
-# Sanity check data
-mSet <- SanityCheckData(mSet)
+  # Initialize data object mSet for MetaboAnalystR
+  # data.type: pktable = peak intensity table
+  mSet <- InitDataObjects("pktable", "stat", FALSE);
 
+  # Read metabolite data for batch
+  # "colu" = sampleIDs in columns, unpaired
+  mSet <- Read.TextData(mSet, paste(main_dir, output_folder, filename, sep = "\\"), "colu", "disc");
 
-##############
-# Replace Missing Values
-##############
-# Replace missing values with 1/2 of the value of the smallest non-zero value for each feature across samples
-mSet <- ReplaceMin(mSet)
-
-
-##############
-# Perform Data Filtering
-##############
-# Filter features based on QC samples (remove samples with RSD >40% in QC samples). No low-variance filter or low-abundance filter applied
-mSet <- FilterVariable(mSet, "T", 40, "iqr", 0, "mean", 0)
+  # Sanity check data
+  mSet <- SanityCheckData(mSet)
 
 
-##############
-# Normalize Data
-##############
-mSet<-PreparePrenormData(mSet)
+  ##############
+  # Replace Missing Values
+  ##############
+  # Replace missing values with 1/2 of the value of the smallest non-zero value for each feature across samples
+  mSet <- ReplaceMin(mSet)
 
-mSet<-Normalization(mSet, "CompNorm", "LogNorm", "AutoNorm", "IS", ratio=FALSE, ratioNum=20)
-mSet<-PlotNormSummary(mSet, "norm_0_", "png", 150, width=NA)
-mSet<-PlotSampleNormSummary(mSet, "snorm_0_", "png", 150, width=NA)
+
+  ##############
+  # Perform Data Filtering
+  ##############
+  # Filter features based on QC samples (remove samples with RSD >40% in QC samples). No low-variance filter or low-abundance filter applied
+  mSet <- FilterVariable(mSet, "T", 40, "iqr", 0, "mean", 0)
+
+
+  ##############
+  # Normalize Data
+  ##############
+  mSet<-PreparePrenormData(mSet)
+
+  mSet<-Normalization(mSet, "CompNorm", "LogNorm", "AutoNorm", "IS", ratio=FALSE, ratioNum=20)
+
+  # Save the normalized data
+  norm_df <- data.frame(t(mSet$dataSet$norm))
+  norm_df$MetaboAnalyst_ID <- rownames(norm_df)
+  norm_df <- norm_df[, c(ncol(norm_df), 1:(ncol(norm_df)-1))]
+
+  # Create a shared_name column
+  norm_df$shared_name <- sapply(strsplit(as.character(norm_df$MetaboAnalyst_ID), "/"), "[", 1)
+
+  # Remove the row.names column
+  rownames(norm_df) <- NULL
+
+  # Write norm_df to csv
+  if (filename == metabolites_data_batch_1_filename) {
+    output_filename <- "data_normalized_batch_1.csv"
+  } else if (filename == metabolites_data_batch_2_filename) {
+    output_filename <- "data_normalized_batch_2.csv"
+  }
+  write.csv(norm_df, file = output_filename, row.names = FALSE)
+    
+}
