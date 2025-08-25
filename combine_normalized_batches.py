@@ -18,7 +18,8 @@ Values
 """
 # Folder names:
 OUTPUT_FOLDER = "output"
-INPUT_FOLDER = pjoin(OUTPUT_FOLDER, "MetaboAnalyst_manual_results")
+INPUT_FOLDER = "input"
+# INPUT_FOLDER = pjoin(OUTPUT_FOLDER, "MetaboAnalyst_manual_results")
 
 BATCH_1_NORMALIZED_FILENAME = "data_normalized_batch_1.csv"
 BATCH_2_NORMALIZED_FILENAME = "data_normalized_batch_2.csv"
